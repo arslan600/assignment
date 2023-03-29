@@ -20,4 +20,8 @@ public class Lesson {
 	public String toString() {
 		return day+ " " + shift + " " + lesson_type + ", " + available + " bookings available.";
 	}
+	
+	public String reportString() {
+		return day+ " " + shift + " " + lesson_type + ", " + avg_rating + " avg. rating from "+ total_attended +" Customer(s).";
+	}
 }

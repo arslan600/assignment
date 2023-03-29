@@ -10,7 +10,8 @@ public class FitnessClub {
 	List<Booking> bookings;
 	List<Customer> customers;
 	String[] month_names = { "March", "April" };
-
+	String[] types = { "Spin", "Yoga", "Zumba", "Aquacise" };
+	int[] prices = {20, 25, 22, 30};
 	public FitnessClub() {
 
 		months = new Month[2];
@@ -81,10 +82,18 @@ public class FitnessClub {
 				attendLesson(scanner);
 				break;
 			case 3:
-				// monthlyLessonReport();
+				int mon_id = getOptionSelected(month_names, scanner);
+				String[] rep = months[mon_id].getReport();
+				for (String string : rep) {
+					System.out.println(string);
+				}
 				break;
 			case 4:
-				// monthlyChampionReport();
+				int mo_id = getOptionSelected(month_names, scanner);
+				String[] crep = months[mo_id].getChampReport(prices,types);
+				for (String string : crep) {
+					System.out.println(string);
+				}
 				break;
 			case 5:
 				quit = true;
@@ -146,8 +155,8 @@ public class FitnessClub {
 			}
 		} else if (option == 1) {
 
-			String[] typeOptions = { "Spin", "Yoga", "Zumba", "Aquacise" };
-			int type = getOptionSelected(typeOptions, scanner);
+			
+			int type = getOptionSelected(types, scanner);
 			int selction = getOptionSelected(months[m_id].timeTableByType(type), scanner);
 			int week = selction / 4;
 			int shift = selction % 4;

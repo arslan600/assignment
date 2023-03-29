@@ -75,10 +75,10 @@ public class FitnessClub {
 
 				break;
 			case 1:
-				// changeBooking(scanner);
+				changeBooking(scanner);
 				break;
 			case 2:
-				// attendLesson(scanner);
+				attendLesson(scanner);
 				break;
 			case 3:
 				// monthlyLessonReport();
@@ -174,5 +174,171 @@ public class FitnessClub {
 				return true;
 		}
 		return false;
+	}
+
+	void attendLesson(Scanner scanner) {
+		int id = getBookingId(scanner);
+
+		for (Booking booking : bookings) {
+			if (booking.id == id) {
+				if (booking.status == 1) {
+					booking.status = 2;
+					System.out.println("Please Provide a Rating 1-5");
+					boolean rated = false;
+					while (!rated) {
+						try {
+
+							int num = scanner.nextInt();
+							scanner.nextLine();
+							if (num <= 5 && num > 0) {
+								booking.rating = num;
+								rated = true;
+							} else
+								System.out.println("Invalid rating try again!");
+						} catch (Exception e) {
+							scanner.nextLine();
+							System.out.println("Enter a Number!");
+
+						}
+					}
+
+					System.out.println("Please provide a review (few words or sentences.)!");
+					months[booking.month].attend(booking);
+					booking.review = scanner.nextLine();
+					System.out.println("Thank you for your review.");
+					return;
+				} else if (booking.status == 2) {
+
+					System.out.println("You have already taken this lesson.");
+					return;
+				} else if (booking.status == 3) {
+
+					System.out.println("Sorry, This booking was cancelled.");
+					return;
+				}
+			}
+		}
+
+		System.out.println("Sorry, This booking with this id is not found.");
+
+	}
+
+	int getBookingId(Scanner scanner) {
+
+		while (true) {
+			System.out.println("Please Enter your booking id!");
+
+			try {
+
+				int choice = scanner.nextInt();
+				scanner.nextLine();
+				if (choice <= Booking.last_id && choice > 0)
+					return choice;
+				System.out.println("Invalid id try again!");
+			} catch (Exception e) {
+				scanner.nextLine();
+				System.out.println("Enter a Number!");
+
+			}
+		}
+	}
+
+	void changeBooking(Scanner scanner) {
+		int id = getBookingId(scanner);
+		String[] cancelOpions = { "Cancel this booking.", "Change this Booking." };
+		int choice = getOptionSelected(cancelOpions, scanner);
+		if (choice == 0) {
+			for (Booking booking : bookings) {
+				if (booking.id == id) {
+					if (booking.status == 1) {
+						booking.status = 3;
+						System.out.println("Your booking is cancelled.");
+						return;
+					} else if (booking.status == 2) {
+
+						System.out.println("You have already taken this lesson.");
+						return;
+					} else if (booking.status == 3) {
+
+						System.out.println("Sorry, This booking is already cancelled.");
+						return;
+					}
+				}
+			}
+
+			System.out.println("Sorry, This booking with this id is not found.");
+			return;
+		}
+		else if(choice ==1) {
+			for (Booking booking : bookings) {
+				if (booking.id == id) {
+					if (booking.status == 1) {
+						int c_id = booking.c_id;
+						int m_id = getOptionSelected(month_names, scanner);
+						System.out.println("Please select the way to check the timetable:");
+						String[] timeTable_options = { "By specifying the day and shift.", "By specifying the fitness type." };
+						int option = getOptionSelected(timeTable_options, scanner);
+
+						if (option == 0) {
+							
+							String[] dayOptions = { "Saturday Morning", "Saturday Evening", "Sunday Morning", "Sunday Evening" };
+							int shift = getOptionSelected(dayOptions, scanner);
+							int selction = getOptionSelected(months[m_id].timeTableByshift(shift), scanner);
+							int week = selction / 4;
+							int type = selction % 4;
+							if (!bookingExists(m_id, week, shift, type, c_id)) {
+								if (months[m_id].isAvailabe(week, shift, type)) {
+									months[m_id].book(week, shift, type);
+									booking.month = m_id;
+									booking.weekend = week;
+									booking.shift = shift;
+									booking.type = type;
+									System.out.println("Booking Changed Successfuly.");
+								} else {
+									System.out.println("Change Failed! booking full. try a different time.");
+								}
+							} else {
+
+								System.out.println("Change Failed! You can not book this lesson again.");
+							}
+						} else if (option == 1) {
+
+							String[] typeOptions = { "Spin", "Yoga", "Zumba", "Aquacise" };
+							int type = getOptionSelected(typeOptions, scanner);
+							int selction = getOptionSelected(months[m_id].timeTableByType(type), scanner);
+							int week = selction / 4;
+							int shift = selction % 4;
+							if (!bookingExists(m_id, week, shift, type, c_id)) {
+								if (months[m_id].isAvailabe(week, shift, type)) {
+									months[m_id].book(week, shift, type);
+									Booking b = new Booking(m_id, week, shift, type, c_id);
+									bookings.add(b);
+									System.out.println("Booking Successful, Your booking id is: " + b.id);
+								} else {
+									System.out.println("Sorry booking full. try a different time.");
+								}
+							} else {
+
+								System.out.println("Sorry! You can not book this lesson again.");
+							}
+						}
+						System.out.println("Your booking is Changed.");
+						return;
+					} else if (booking.status == 2) {
+
+						System.out.println("You have already taken this lesson.");
+						return;
+					} else if (booking.status == 3) {
+
+						System.out.println("Sorry, This booking is already cancelled.");
+						return;
+					}
+				}
+			}
+
+			System.out.println("Sorry, This booking with this id is not found.");
+			return;
+			}
+
 	}
 }

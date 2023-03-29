@@ -30,6 +30,15 @@ public class Month {
 		}
 		return res;
 	}
+	
+	void attend(Booking booking) {
+		weekends[booking.weekend].lessons[booking.shift][booking.type].total_rating += booking.rating;
+		weekends[booking.weekend].lessons[booking.shift][booking.type].total_attended++;
+		
+		weekends[booking.weekend].lessons[booking.shift][booking.type].avg_rating =
+		weekends[booking.weekend].lessons[booking.shift][booking.type].total_rating /
+		weekends[booking.weekend].lessons[booking.shift][booking.type].total_attended;
+	}
 
 	boolean isAvailabe(int week, int shift, int type) {
 		return weekends[week].lessons[shift][type].available > 0;

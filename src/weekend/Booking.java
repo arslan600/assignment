@@ -6,7 +6,7 @@ public class Booking {
 	int shift;
 	int type;
 	int id;
-	int status;
+	int status;  // 1= booked, 2= attended, 3 = cancelled
 	int rating;
 	int c_id;
 	String review;

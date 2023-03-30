@@ -54,19 +54,19 @@ public class Month {
 				}
 			}
 		}
-		int highest = -1,highest_index = -1;
+		int highest = -1, highest_index = -1;
 		for (int i = 0; i < 4; i++) {
 			profits[i] = attend[i] * prices[i];
-			if(profits[i] > highest) {
+			if (profits[i] > highest) {
 				highest = profits[i];
 				highest_index = i;
 			}
 		}
-		
+
 		for (int i = 0; i < profits.length; i++) {
-			res[i+1] = types[i] + " earned $"+profits[i] +" in this month.";
+			res[i + 1] = types[i] + " earned $" + profits[i] + " in this month.";
 		}
-		res[0] = types[highest_index] + " earned highest $"+profits[highest_index] +" profit.";
+		res[0] = types[highest_index] + " earned highest $" + profits[highest_index] + " profit.";
 		return res;
 	}
 
@@ -82,12 +82,21 @@ public class Month {
 		return weekends[week].lessons[shift][type].available > 0;
 	}
 
-	void book(int week, int shift, int type) {
-		weekends[week].lessons[shift][type].available--;
+	boolean book(int week, int shift, int type) {
+		if (isAvailabe(week, shift, type)) {
+			weekends[week].lessons[shift][type].available--;
+			return true;
+
+		}
+		return false;
 	}
 
-	void cancel(int week, int shift, int type) {
-		weekends[week].lessons[shift][type].available++;
+	boolean cancel(int week, int shift, int type) {
+		if(weekends[week].lessons[shift][type].available < 5) {
+			weekends[week].lessons[shift][type].available++;
+			return true;
+		}
+		return false;
 	}
 
 }

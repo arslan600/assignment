@@ -37,7 +37,7 @@ public class Booking {
 			this.status = Integer.parseInt(data[5].strip());
 			this.rating = Integer.parseInt(data[6].strip());
 			this.c_id = Integer.parseInt(data[7].strip());
-			this.review = data[8];
+			this.review = data[8].strip();
 			last_id = id;
 		} catch (Exception e) {
 			System.out.println("Error loading the booking"+ e.toString());

@@ -3,6 +3,7 @@ package weekend;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.io.*;
 
 public class FitnessClub {
 
@@ -11,7 +12,8 @@ public class FitnessClub {
 	List<Customer> customers;
 	String[] month_names = { "March", "April" };
 	String[] types = { "Spin", "Yoga", "Zumba", "Aquacise" };
-	int[] prices = {20, 25, 22, 30};
+	int[] prices = { 20, 25, 22, 30 };
+
 	public FitnessClub() {
 
 		months = new Month[2];
@@ -34,7 +36,9 @@ public class FitnessClub {
 
 	public static void main(String[] args) {
 		FitnessClub club = new FitnessClub();
+		club.readBookings();
 		club.run();
+		club.saveBookings();
 	}
 
 	int selectCustomer(Scanner scanner) {
@@ -90,7 +94,7 @@ public class FitnessClub {
 				break;
 			case 4:
 				int mo_id = getOptionSelected(month_names, scanner);
-				String[] crep = months[mo_id].getChampReport(prices,types);
+				String[] crep = months[mo_id].getChampReport(prices, types);
 				for (String string : crep) {
 					System.out.println(string);
 				}
@@ -155,7 +159,6 @@ public class FitnessClub {
 			}
 		} else if (option == 1) {
 
-			
 			int type = getOptionSelected(types, scanner);
 			int selction = getOptionSelected(months[m_id].timeTableByType(type), scanner);
 			int week = selction / 4;
@@ -277,20 +280,21 @@ public class FitnessClub {
 
 			System.out.println("Sorry, This booking with this id is not found.");
 			return;
-		}
-		else if(choice ==1) {
+		} else if (choice == 1) {
 			for (Booking booking : bookings) {
 				if (booking.id == id) {
 					if (booking.status == 1) {
 						int c_id = booking.c_id;
 						int m_id = getOptionSelected(month_names, scanner);
 						System.out.println("Please select the way to check the timetable:");
-						String[] timeTable_options = { "By specifying the day and shift.", "By specifying the fitness type." };
+						String[] timeTable_options = { "By specifying the day and shift.",
+								"By specifying the fitness type." };
 						int option = getOptionSelected(timeTable_options, scanner);
 
 						if (option == 0) {
-							
-							String[] dayOptions = { "Saturday Morning", "Saturday Evening", "Sunday Morning", "Sunday Evening" };
+
+							String[] dayOptions = { "Saturday Morning", "Saturday Evening", "Sunday Morning",
+									"Sunday Evening" };
 							int shift = getOptionSelected(dayOptions, scanner);
 							int selction = getOptionSelected(months[m_id].timeTableByshift(shift), scanner);
 							int week = selction / 4;
@@ -347,7 +351,52 @@ public class FitnessClub {
 
 			System.out.println("Sorry, This booking with this id is not found.");
 			return;
-			}
+		}
 
 	}
+
+	public void readBookings() {
+		String filename = "bookings.txt";
+		File file = new File(filename);
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			String line;
+			while ((line = br.readLine()) != null) {
+				if (line.length() > 7) {
+					Booking b = new Booking(line);
+					bookings.add(b);
+					if (b.status == 1) {
+						months[b.month].book(b.weekend, b.shift, b.type);
+					}
+					if (b.status == 2) {
+						months[b.month].book(b.weekend, b.shift, b.type);
+						months[b.month].attend(b);
+					}
+
+				}
+			}
+			br.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("File not found: " + filename);
+		} catch (IOException e) {
+			System.out.println("Error reading file: " + filename);
+		}
+	}
+
+	void saveBookings() {
+		String filename = "bookings.txt";
+		try {
+			BufferedWriter bw = new BufferedWriter(new FileWriter(filename));
+			for (Booking booking : bookings) {
+
+				bw.write(booking.toString());
+				bw.newLine();
+			}
+			bw.close();
+			System.out.println("Bookings saved successfully.");
+		} catch (IOException e) {
+			System.out.println("Error writing file: " + filename);
+		}
+	}
+
 }
